@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:english_words/english_words.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'dart:convert';
+import 'dart:io';
 
 void main() {
   runApp(MyApp());
@@ -46,14 +48,31 @@ class _MyHomePageState extends State<MyHomePage> {
         timeInSecForIosWeb: 1,
         backgroundColor: Colors.red,
         textColor: Colors.white,
-        fontSize: 16.0
-    );
+        fontSize: 16.0);
   }
 
   _launchURL() async {
     setState(() {
       _counter++;
     });
+  }
+
+  getWeatherData() async {
+    try {
+      HttpClient httpClient = new HttpClient();
+      HttpClientRequest httpClientRequest = await httpClient.getUrl(
+          Uri.parse("https://wanandroid.com/wxarticle/list/408/1/json"));
+      //等待服务器返回结果
+      HttpClientResponse httpClientResponse = await httpClientRequest.close();
+      //使用utf8.decoder 从response 里解析数据
+      var result = await httpClientResponse.transform(utf8.decoder).join();
+      //输出响应头
+      print(result);
+      //httpClient 关闭
+      httpClient.close();
+    } catch (e) {
+      print("请求失败：$e");
+    } finally {}
   }
 
   @override
@@ -88,7 +107,7 @@ class _MyHomePageState extends State<MyHomePage> {
         data: Theme.of(context).copyWith(accentColor: Colors.green),
         child: new FloatingActionButton(
           backgroundColor: Colors.red,
-          onPressed: _luncher,
+          onPressed: getWeatherData,
           tooltip: 'Increment',
           child: Icon(Icons.add),
         ),
