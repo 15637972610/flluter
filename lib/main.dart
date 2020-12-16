@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:english_words/english_words.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:study_demo/time/LiveliHoodPage.dart';
+import 'package:study_demo/time/MePage.dart';
+import 'package:study_demo/time/SqurePage.dart';
 import 'dart:convert';
 import 'dart:io';
+
+import 'package:study_demo/time/TimeFreePage.dart';
+import 'time/YocWebPage.dart';
 
 void main() {
   runApp(MyApp());
@@ -13,11 +19,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.green,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(title: '梨涡'),
     );
   }
 }
@@ -32,30 +34,30 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
-  void _luncher() async {
-    Fluttertoast.showToast(
-        msg: "This is Center Short Toast",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-        fontSize: 16.0);
-  }
-
-  _launchURL() async {
-    setState(() {
-      _counter++;
-    });
-  }
+  int currentIndex;
+  final pages = [YocWebPage(),LiveliHoodPage(),SqurePage(),MePage()];
+  final List<BottomNavigationBarItem> bottomNavItems = [
+    BottomNavigationBarItem(
+      backgroundColor: Colors.blue,
+      icon: Icon(Icons.home),
+      title: Text("首页"),
+    ),
+    BottomNavigationBarItem(
+      backgroundColor: Colors.green,
+      icon: Icon(Icons.message),
+      title: Text("生活"),
+    ),
+    BottomNavigationBarItem(
+      backgroundColor: Colors.green,
+      icon: Icon(Icons.message),
+      title: Text("圈子"),
+    ),
+    BottomNavigationBarItem(
+      backgroundColor: Colors.green,
+      icon: Icon(Icons.message),
+      title: Text("我的"),
+    ),
+  ];
 
   getWeatherData() async {
     try {
@@ -76,43 +78,33 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    currentIndex = 0;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
+      bottomNavigationBar: BottomNavigationBar(
+        items: bottomNavItems,
+        currentIndex: currentIndex,
+        type: BottomNavigationBarType.fixed,
+        onTap: (index) {
+          _changePage(index);
+        },
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            Text(
-              new WordPair.random().asPascalCase,
-              style: Theme.of(context).textTheme.headline1,
-            ),
-            Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline1,
-            ),
-            RaisedButton(
-              onPressed: _luncher,
-              child: new Text('data'),
-            )
-          ],
-        ),
-      ),
-      floatingActionButton: new Theme(
-        data: Theme.of(context).copyWith(accentColor: Colors.green),
-        child: new FloatingActionButton(
-          backgroundColor: Colors.red,
-          onPressed: getWeatherData,
-          tooltip: 'Increment',
-          child: Icon(Icons.add),
-        ),
-      ),
-      // This trailing comma makes auto-formatting nicer for build methods.
+      body: pages[currentIndex],
     );
+  }
+
+  /*切换页面*/
+  void _changePage(int index) {
+    /*如果点击的导航项不是当前项  切换 */
+    if (index != currentIndex) {
+      setState(() {
+        currentIndex = index;
+      });
+    }
   }
 }
